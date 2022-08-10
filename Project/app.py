@@ -3,6 +3,7 @@ import pandas as pd
 from numpy import argmax
 from tensorflow import keras
 from flask import Flask, request, jsonify, render_template
+from werkzeug.utils import secure_filename
 
 import constants
 from train import Train
@@ -35,29 +36,31 @@ def dashboard():
 
 @app.route("/train", methods=["POST"])
 def train():
-    data = request.form
-    data = dict(data)
-    params = {"epochs": data.get("epochs", 200),
-              "batch_size": data.get("batch_size", 8),
-              "lr": data.get("lr", 0.001)
+    data = request.files['file']
+    data.save(secure_filename(data.filename))
+    params = {"epochs": int(request.form.get('epochs')),
+              "batch_size": int(request.form.get('batch_size')),
+              "lr": float(request.form.get('lr'))
               }
-    train_size = data.get("train_size", 0.85)
-    file_path = data.get("file_path", "heart.csv")
-    Train().main(params_dict=params, file_path=file_path, train_size=train_size)
-
+    Train().main(params_dict=params, file_path=data.filename, train_size=float(request.form.get('train_size')))
+    return "Training Successful"
 @app.route("/predict", methods=["POST"])
 def test():
     data = request.form
     data = dict(data)
-    print(data)
-    inputData = [float(value) for key, value in data.items()]
+    data2 = data.copy()
+    inputData = [float(value) for key, value in data2.items()]
     print(inputData)
-    df = pd.DataFrame([inputData], columns=["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"])
-    model_output = model.predict(df)
+    df = pd.DataFrame([inputData],
+                      columns=["age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach", "exang", "oldpeak",
+                               "slope", "ca", "thal"])
+    model_output = predict(df)
+    print(model_output)
     if model_output == "Error while predicting..":
-        return jsonify(model_output, 500)
+        return jsonify(model_output), 500
     else:
-        return jsonify(model_output, 200)
+        return jsonify(model_output), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)

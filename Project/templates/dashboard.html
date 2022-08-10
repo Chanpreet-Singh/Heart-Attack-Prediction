@@ -106,7 +106,7 @@
         <div class="row g-5">
             <div>
                 <h4 class="mb-3">Enter Details</h4>
-                <form action="/train-data" method="POST" enctype = "multipart/form-data">
+                <form action="/train" method="POST" enctype = "multipart/form-data">
                     <div class="row g-3">
                         <div class="col-sm-3">
                             <label for="file" class="form-label">Upload CSV File</label>
@@ -125,14 +125,14 @@
                         </div>
 
                         <div class="col-sm-3">
-                            <label for="ephocs" class="form-label">Epochs</label>
+                            <label for="epochs" class="form-label">Epochs</label>
                             <input type="number" class="form-control" id="epochs" name="epochs" required>
 
                         </div>
 
                         <div class="col-sm-3">
-                            <label for="test_size" class="form-label">Test Size</label>
-                            <input type="number" step="0.01" class="form-control" id="test_size" name="test_size" required>
+                            <label for="train_size" class="form-label">Test Size</label>
+                            <input type="number" step="0.01" class="form-control" id="train_size" name="train_size" required>
                         </div>
 
                         <div class="col-sm-3">
